@@ -5,6 +5,8 @@
   "author": {
     "name": "Jeremy Gillick"
   },
+  "repository": "https://github.com/jgillick/jest-array-equal",
+  "homepage": "https://github.com/jgillick/jest-array-equal",
   "main": "dist/index.js",
   "scripts": {
     "prepare": "npm run build",
