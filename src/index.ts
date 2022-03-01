@@ -1,32 +1,53 @@
-import "jest";
-import { printDiffOrStringify } from "jest-matcher-utils";
+import 'jest';
+import { printDiffOrStringify } from 'jest-matcher-utils';
 
 /**
- * Custom jest array matchers.
+ * Jest array equality matchers.
  *
  * To install:
  * ```
  *  import 'jest';
- *  import installArrayMatchers from './matchers/arrayMatchers';
- *  installArrayMatchers();
+ *  import { arrayMatchers } from 'jest-array-equal';
+ *  expect.extend(arrayMatchers);
  * ```
  */
+declare global {
+  namespace jest {
+    interface Matchers<R, T> {
+      /**
+       * Test if two arrays have the same values, regardless of array order.
+       * @example
+       * expect([1,2,4]).toEqualArray([2,4,1]); // Pass
+       * expect([1,2,4]).toEqualArray([567]);   // Fail
+       */
+      toEqualArray(expected: any[]): R;
+
+      /**
+       * Test the equality of two arrays of objects by a particular property.
+       *
+       * This is useful if the object references might be different, but there's an ID property.
+       *
+       * @example
+       * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:2, id:1}]); // Pass
+       * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:3, id:1}]); // Fail
+       */
+      toEqualArrayBy(key: string, expected: Record<any, any>[]): R;
+    }
+  }
+}
 
 const printDiff = (expected: any, received: any) =>
   printDiffOrStringify(
-    JSON.stringify(expected, null, " "),
-    JSON.stringify(received, null, " "),
-    "Expected",
-    "Received",
+    JSON.stringify(expected, null, ' '),
+    JSON.stringify(received, null, ' '),
+    'Expected',
+    'Received',
     true
   );
 
-const arrayTypeCheck = (
-  received: any[],
-  expected: any[]
-): { pass: boolean; error: string } => {
+const arrayTypeCheck = (received: any[], expected: any[]): { pass: boolean; error: string } => {
   let pass = true;
-  let error = "";
+  let error = '';
   if (!Array.isArray(received)) {
     pass = false;
     error = `Received value is not an array: ${typeof received}`;
@@ -52,9 +73,7 @@ export const arrayMatchers = {
     const receivedSorted = [...received].sort();
     const expectedSorted = [...expected].sort();
     const sameLength = received.length == expected.length;
-    const areEqual =
-      sameLength &&
-      receivedSorted.every((item, i) => expectedSorted[i] == item);
+    const areEqual = sameLength && receivedSorted.every((item, i) => expectedSorted[i] == item);
 
     if (!areEqual) {
       pass = false;
@@ -64,18 +83,14 @@ export const arrayMatchers = {
     return { pass, message: () => error };
   },
 
-  toEqualArrayBy(
-    received: any[],
-    key: string,
-    expected: any[]
-  ): jest.CustomMatcherResult {
+  toEqualArrayBy(received: any[], key: string, expected: any[]): jest.CustomMatcherResult {
     let { pass, error } = arrayTypeCheck(received, expected);
     if (!pass) {
       return { pass, message: () => error };
     }
 
     const getValue = (item: any) => {
-      if (typeof item !== "object") {
+      if (typeof item !== 'object') {
         return undefined;
       }
       return item[key];
@@ -92,9 +107,7 @@ export const arrayMatchers = {
     const expectedFormatted = expectedValues.map((value) => `${key}: ${value}`);
 
     const sameLength = received.length == expected.length;
-    const areEqual =
-      sameLength &&
-      receivedValues.every((item, i) => expectedValues[i] == item);
+    const areEqual = sameLength && receivedValues.every((item, i) => expectedValues[i] == item);
 
     if (!areEqual) {
       pass = false;
@@ -104,31 +117,3 @@ export const arrayMatchers = {
     return { pass, message: () => error };
   },
 };
-
-//
-// Typings
-//
-declare global {
-  namespace jest {
-    interface Matchers<R, T> {
-      /**
-       * Test if two arrays have the same values, regardless of array order.
-       * @example
-       * expect([1,2,4]).toEqualArray([2,4,1]); // Pass
-       * expect([1,2,4]).toEqualArray([567]);   // Fail
-       */
-      toEqualArray(expected: any[]): R;
-
-      /**
-       * Test the equality of two arrays of objects by a particular property.
-       *
-       * This is useful if the object references might be different, but there's an ID property.
-       *
-       * @example
-       * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:2, id:1}]); // Pass
-       * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:3, id:1}]); // Fail
-       */
-      toEqualArrayBy(key: string, expected: Record<any, any>[]): R;
-    }
-  }
-}
