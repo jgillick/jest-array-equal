@@ -1,13 +1,14 @@
 {
   "name": "jest-array-equal",
   "description": "A couple straightforward jest array equality matchers.",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": {
     "name": "Jeremy Gillick"
   },
   "repository": "https://github.com/jgillick/jest-array-equal",
   "homepage": "https://github.com/jgillick/jest-array-equal",
-  "main": "dist/index.js",
   "scripts": {
     "prepare": "npm run build",
     "test": "jest",

@@ -25,8 +25,6 @@ declare global {
       /**
        * Test the equality of two arrays of objects by a particular property.
        *
-       * This is useful if the object references might be different, but there's an ID property.
-       *
        * @example
        * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:2, id:1}]); // Pass
        * expect([{id:1, id:2}]).toEqualArrayBy('id', [{id:3, id:1}]); // Fail
@@ -58,7 +56,7 @@ const arrayTypeCheck = (received: any[], expected: any[]): { pass: boolean; erro
   return { pass, error };
 };
 
-export const arrayMatchers = {
+export default {
   toEqualArray(received: any[], expected: any[]): jest.CustomMatcherResult {
     let { pass, error } = arrayTypeCheck(received, expected);
     if (!pass) {
